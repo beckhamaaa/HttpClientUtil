@@ -1,12 +1,12 @@
 package com.arronlong.httpclientutil.test;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-
 import com.arronlong.httpclientutil.HttpClientUtil;
 import com.arronlong.httpclientutil.common.HttpConfig;
 import com.arronlong.httpclientutil.exception.HttpProcessException;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 
 /**
  * 下载demo
@@ -18,7 +18,8 @@ import com.arronlong.httpclientutil.exception.HttpProcessException;
 public class TestDownLoadImg {
 	
 	public static void main(String[] args) throws FileNotFoundException, HttpProcessException{
-		String imgUrl = "https://ss0.bdstatic.com/5aV1bjqh_Q23odCf/static/superman/img/logo/logo_white_fe6da1ec.png"; //百度logo
+		//百度logo
+		String imgUrl = "https://ss0.bdstatic.com/5aV1bjqh_Q23odCf/static/superman/img/logo/logo_white_fe6da1ec.png";
 		File file = new File("c:/baidu.png");
 		HttpClientUtil.down(HttpConfig.custom().url(imgUrl).out(new FileOutputStream(file)));
 		if (file.exists()) {

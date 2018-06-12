@@ -11,7 +11,6 @@ import org.apache.http.Header;
 import org.apache.http.client.HttpClient;
 
 import java.io.FileNotFoundException;
-import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -92,16 +91,16 @@ public class Demo {
 //        log.info("post:" + post);
 
         //下载，需要调用config.out(fileOutputStream对象)
-        OutputStream outputStream = HttpClientUtil.down(config);
+//        OutputStream outputStream = HttpClientUtil.down(config);
         //上传，需要调用config.files(文件路径数组)
-        String upload = HttpClientUtil.upload(config);
+//        String upload = HttpClientUtil.upload(config);
 
         //如果指向看是否访问正常
         String http = HttpClientUtil.head(config); // 返回Http协议号+状态码
         int statusCode = HttpClientUtil.status(config);//返回状态码
         log.info("http:" + http);
         log.info("statusCode:" + statusCode);
-        log.info("down:" + outputStream);
-        log.info("upload:" + upload);
+//        log.info("down:" + outputStream);
+//        log.info("upload:" + upload);
     }
 }

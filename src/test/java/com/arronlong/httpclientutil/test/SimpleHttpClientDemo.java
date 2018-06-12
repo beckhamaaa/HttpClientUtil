@@ -1,5 +1,6 @@
 package com.arronlong.httpclientutil.test;
 
+import lombok.extern.log4j.Log4j;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.NameValuePair;
@@ -48,7 +49,24 @@ import java.util.Map.Entry;
  * @date 2015年11月11日 下午6:36:49 
  * @version 1.0 
  */
+@Log4j
 public class SimpleHttpClientDemo {
+
+	public static void main(String[] args) throws ParseException, IOException, KeyManagementException, NoSuchAlgorithmException {
+		String url = "http://php.weather.sina.com.cn/iframe/index/w_cl.php";
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("code", "js");
+		map.put("day", "0");
+		map.put("city", "上海");
+		map.put("dfc", "1");
+		map.put("charset", "utf-8");
+		String body = send(url, map, "utf-8");
+		log.info("交易响应结果：\n"+body);
+		System.out.println("-----------------------------------");
+		map.put("city", "北京");
+		body = send(url, map, "utf-8");
+		log.info("交易响应结果：\n"+body);
+	}
 
 	/**
 	 * 设置信任自定义的证书
@@ -132,7 +150,7 @@ public class SimpleHttpClientDemo {
 	 */
 	public static HttpClientBuilder proxy(String hostOrIP, int port){
 		// 依次是代理地址，代理端口号，协议类型  
-		HttpHost proxy = new HttpHost(hostOrIP, port, "http");  
+		HttpHost proxy = new HttpHost(hostOrIP, port, "http");
 		DefaultProxyRoutePlanner routePlanner = new DefaultProxyRoutePlanner(proxy);
 		return HttpClients.custom().setRoutePlanner(routePlanner);
 	}
@@ -154,21 +172,21 @@ public class SimpleHttpClientDemo {
 
 		//绕过证书验证，处理https请求
 		SSLContext sslcontext = createIgnoreVerifySSL();
-		
-        // 设置协议http和https对应的处理socket链接工厂的对象
-        Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory>create()
-            .register("http", PlainConnectionSocketFactory.INSTANCE)
-            .register("https", new SSLConnectionSocketFactory(sslcontext))
-            .build();
-        PoolingHttpClientConnectionManager connManager = new PoolingHttpClientConnectionManager(socketFactoryRegistry);
 
-        //创建自定义的httpclient对象
+		// 设置协议http和https对应的处理socket链接工厂的对象
+		Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory>create()
+				.register("http", PlainConnectionSocketFactory.INSTANCE)
+				.register("https", new SSLConnectionSocketFactory(sslcontext))
+				.build();
+		PoolingHttpClientConnectionManager connManager = new PoolingHttpClientConnectionManager(socketFactoryRegistry);
+
+		//创建自定义的httpclient对象
 //		CloseableHttpClient client = proxy("127.0.0.1", 8087).setConnectionManager(connManager).build();
 		CloseableHttpClient client = HttpClients.createDefault();
-		
+
 		//创建post方式请求对象
 		HttpPost httpPost = new HttpPost(url);
-		
+
 		//装填参数
 		List<NameValuePair> nvps = new ArrayList<NameValuePair>();
 		if(map!=null){
@@ -178,15 +196,14 @@ public class SimpleHttpClientDemo {
 		}
 		//设置参数到请求对象中
 		httpPost.setEntity(new UrlEncodedFormEntity(nvps, encoding));
+		log.info("请求地址："+url);
+		log.info("请求参数："+nvps.toString());
 
-		System.out.println("请求地址："+url);
-		System.out.println("请求参数："+nvps.toString());
-		
 		//设置header信息
 		//指定报文头【Content-type】、【User-Agent】
 		httpPost.setHeader("Content-type", "application/x-www-form-urlencoded");
 		httpPost.setHeader("User-Agent", "Mozilla/4.0 (compatible; MSIE 5.0; Windows NT; DigExt)");
-		
+
 		//执行请求操作，并拿到结果（同步阻塞）
 		CloseableHttpResponse response = client.execute(httpPost);
 		//获取结果实体
@@ -198,33 +215,7 @@ public class SimpleHttpClientDemo {
 		EntityUtils.consume(entity);
 		//释放链接
 		response.close();
-        return body;
-	}
-	
-//	public static void main(String[] args) throws ParseException, IOException, KeyManagementException, NoSuchAlgorithmException, HttpProcessException {
-//		String url = "https://www.facebook.com/";
-//		String body = send(url, null, "utf-8");
-//		System.out.println("交易响应结果");
-//		System.out.println(body);
-//	}
-//	
-	
-	public static void main(String[] args) throws ParseException, IOException, KeyManagementException, NoSuchAlgorithmException {
-		String url = "http://php.weather.sina.com.cn/iframe/index/w_cl.php";
-		Map<String, String> map = new HashMap<String, String>();
-		map.put("code", "js");
-		map.put("day", "0");
-		map.put("city", "上海");
-		map.put("dfc", "1");
-		map.put("charset", "utf-8");
-		String body = send(url, map, "utf-8");
-		System.out.println("交易响应结果：");
-		System.out.println(body);
-		System.out.println("-----------------------------------");
-		
-		map.put("city", "北京");
-		body = send(url, map, "utf-8");
-		System.out.println("交易响应结果：");
-		System.out.println(body);
+		return body;
+
 	}
 }
